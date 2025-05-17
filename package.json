@@ -30,5 +30,20 @@
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.7",
     "typescript": "^5"
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
+  },
+  "footer": {
+    "text": "© {new Date().getFullYear()} POS Dashboard | Made by ทีมงานของคุณ",
+    "className": "bg-white border-t py-4 text-center text-gray-400"
+  },
+  "button": {
+    "className": "bg-green-600 px-4 py-1 rounded text-white hover:bg-green-700 transition",
+    "onClick": "onAddToCart(prod)",
+    "text": "หยิบใส่ตะกร้า"
   }
 }
