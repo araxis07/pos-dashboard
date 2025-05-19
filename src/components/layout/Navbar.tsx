@@ -20,10 +20,11 @@ export default function Navbar() {
         <span className="font-bold text-xl tracking-wide">POS DASHBOARD</span>
       </Link>
       
-      {/* Mobile menu button */}
-      <button 
+      {/* Mobile menu button */}      <button 
         className="md:hidden p-2 rounded hover:bg-blue-600"
         onClick={() => setIsOpen(!isOpen)}
+        title="Toggle navigation menu"
+        aria-label="Toggle navigation menu"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           {isOpen ? 
