@@ -3,6 +3,7 @@ import { useState } from "react";
 import Modal from "@/components/common/Modal";
 import { Button } from "@/components/common/Button";
 import { formatCurrency } from "@/components/utils/formatter";
+import Receipt from "@/components/pos/Receipt";
 
 interface CartItem {
   id: string;
@@ -34,6 +35,8 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
   
   // Calculate change
   const change = receivedAmount ? Number(receivedAmount) - total : 0;
+    // State for receipt generation
+  const [showReceiptButtons, setShowReceiptButtons] = useState(false);
   
   // Handle confirming the payment
   const handlePaymentConfirmation = () => {
@@ -42,11 +45,33 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
       return;
     }
     
-    onConfirm();
+    // Show receipt options instead of closing immediately
+    setShowReceiptButtons(true);
   };
   
-  // Custom footer with action buttons
-  const modalFooter = (
+  // Handle final confirmation after choosing receipt option
+  const handleFinalConfirm = () => {
+    setShowReceiptButtons(false);
+    onConfirm();
+  };  // Custom footer with action buttons
+  const modalFooter = showReceiptButtons ? (
+    <>
+      <div className="flex items-center mr-auto">
+        <Receipt 
+          cart={cart} 
+          paymentMethod={paymentMethod}
+          receivedAmount={Number(receivedAmount)}
+          change={change}
+        />
+      </div>
+      <Button 
+        variant="success" 
+        onClick={handleFinalConfirm}
+      >
+        เสร็จสิ้น
+      </Button>
+    </>
+  ) : (
     <>
       <Button variant="outline" onClick={onClose}>ยกเลิก</Button>
       <Button 
@@ -58,20 +83,58 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
       </Button>
     </>
   );
-  
-  return (
+    return (
     <Modal 
       open={open} 
-      onClose={onClose} 
-      title="ชำระเงิน"
-      description="กรุณาเลือกวิธีการชำระเงินและกรอกข้อมูลให้ครบถ้วน"
+      onClose={showReceiptButtons ? handleFinalConfirm : onClose} 
+      title={showReceiptButtons ? "ชำระเงินสำเร็จ" : "ชำระเงิน"}
+      description={showReceiptButtons 
+        ? "การชำระเงินเสร็จสมบูรณ์ คุณสามารถพิมพ์ใบเสร็จได้" 
+        : "กรุณาเลือกวิธีการชำระเงินและกรอกข้อมูลให้ครบถ้วน"
+      }
       footer={modalFooter}
       size="lg"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left column - Order summary */}
-        <div>
-          <h3 className="font-medium text-lg mb-3">สรุปรายการ</h3>
+    >      {showReceiptButtons ? (
+        <div className="text-center py-6">
+          <div className="w-20 h-20 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-bold text-green-700 mb-2">ชำระเงินสำเร็จ!</h3>
+          <p className="text-gray-600 mb-8">คุณสามารถพิมพ์ใบเสร็จหรือปิดหน้าต่างนี้เพื่อทำรายการอื่น</p>
+          
+          <div className="border rounded-md p-4 bg-blue-50 text-left max-w-md mx-auto mb-6">
+            <h4 className="font-medium text-blue-800 mb-2">รายละเอียดการชำระเงิน</h4>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>วิธีชำระเงิน:</div>
+              <div className="font-medium">
+                {paymentMethod === 'cash' ? 'เงินสด' : paymentMethod === 'card' ? 'บัตรเครดิต' : 'พร้อมเพย์'}
+              </div>
+              
+              {paymentMethod === 'cash' && (
+                <>
+                  <div>จำนวนเงินที่รับ:</div>
+                  <div className="font-medium">{formatCurrency(Number(receivedAmount))}</div>
+                  
+                  <div>เงินทอน:</div>
+                  <div className="font-medium">{formatCurrency(change)}</div>
+                </>
+              )}
+              
+              <div>จำนวนรายการ:</div>
+              <div className="font-medium">{cart.reduce((sum, item) => sum + item.qty, 0)} ชิ้น</div>
+              
+              <div>ยอดรวมทั้งสิ้น:</div>
+              <div className="font-medium text-blue-700">{formatCurrency(total)}</div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left column - Order summary */}
+          <div>
+            <h3 className="font-medium text-lg mb-3">สรุปรายการ</h3>
           
           <div className="border rounded-md mb-4 overflow-hidden">
             <div className="max-h-64 overflow-y-auto">
@@ -216,8 +279,7 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
               <p className="text-sm text-gray-500">หรือใช้เครื่องรูดบัตรอื่น ๆ</p>
             </div>
           )}
-          
-          {/* PromptPay QR payment form */}
+            {/* PromptPay QR payment form */}
           {paymentMethod === 'promptpay' && (
             <div className="border rounded-md p-4 bg-gray-50 text-center py-6">
               <div className="w-48 h-48 mx-auto mb-4 bg-white p-2 border">
@@ -231,7 +293,6 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
           )}
         </div>
       </div>
-    </Modal>
-  );
-}
+      )}
+    </Modal>  );
 }

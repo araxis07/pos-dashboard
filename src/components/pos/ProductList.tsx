@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { formatCurrency } from "@/components/utils/formatter";
+import LoadingState from "@/components/common/LoadingState";
 
 interface Product {
   id: string;
@@ -18,21 +20,44 @@ interface ProductListProps {
 }
 
 export default function ProductList({ onAddToCart, searchTerm = "", category = "all" }: ProductListProps) {
-  // Mock data with more details - in a real app this would come from an API
-  const allProducts: Product[] = [
-    { id: "1", name: "น้ำดื่ม", price: 10, stock: 50, category: "drinks", barcode: "8850123456789" },
-    { id: "2", name: "ขนมปัง", price: 20, stock: 30, category: "food", barcode: "8850987654321" },
-    { id: "3", name: "ขนมถุง", price: 15, stock: 24, category: "snacks", barcode: "8850456789123" },
-    { id: "4", name: "น้ำอัดลม", price: 20, stock: 40, category: "drinks", barcode: "8850111222333" },
-    { id: "5", name: "มาม่า", price: 6, stock: 100, category: "food", barcode: "8850333222111" },
-    { id: "6", name: "แซนวิช", price: 25, stock: 15, category: "food", barcode: "8850444555666" },
-    { id: "7", name: "น้ำผลไม้", price: 25, stock: 30, category: "drinks", barcode: "8850666777888" },
-    { id: "8", name: "ช็อคโกแลต", price: 35, stock: 45, category: "snacks", barcode: "8850999888777" },
-    { id: "9", name: "ไอศกรีม", price: 30, stock: 20, category: "snacks", barcode: "8850111999888" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   
-  // Filter products based on search term and category
-  const filteredProducts = allProducts.filter(prod => {
+  // Simulate fetching products with loading state
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Mock data - in a real app this would come from an API
+        const allProducts: Product[] = [
+          { id: "1", name: "น้ำดื่ม", price: 10, stock: 50, category: "drinks", barcode: "8850123456789" },
+          { id: "2", name: "ขนมปัง", price: 20, stock: 30, category: "food", barcode: "8850987654321" },
+          { id: "3", name: "ขนมถุง", price: 15, stock: 24, category: "snacks", barcode: "8850456789123" },
+          { id: "4", name: "น้ำอัดลม", price: 20, stock: 40, category: "drinks", barcode: "8850111222333" },
+          { id: "5", name: "มาม่า", price: 6, stock: 100, category: "food", barcode: "8850333222111" },
+          { id: "6", name: "แซนวิช", price: 25, stock: 15, category: "food", barcode: "8850444555666" },
+          { id: "7", name: "น้ำผลไม้", price: 25, stock: 30, category: "drinks", barcode: "8850666777888" },
+          { id: "8", name: "ช็อคโกแลต", price: 35, stock: 45, category: "snacks", barcode: "8850999888777" },
+          { id: "9", name: "ไอศกรีม", price: 30, stock: 20, category: "snacks", barcode: "8850111999888" },
+        ];
+        
+        setProducts(allProducts);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);  // Filter products based on search term and category
+  const filteredProducts = products.filter(prod => {
     const matchesSearch = searchTerm === "" || 
                          prod.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          prod.barcode?.includes(searchTerm);
