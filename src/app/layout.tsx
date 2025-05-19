@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import Navbar from "@/components/layout/Navbar";
 import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
+import Toast from "@/components/common/Toast";
 
 export const metadata: Metadata = {
   title: 'POS & Dashboard System',
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="bg-slate-100 text-slate-900 min-h-screen flex flex-col">
+        <Toast />
         <Navbar />
         <div className="flex flex-1 min-h-[calc(100vh-64px)]">
           <Sidebar />
