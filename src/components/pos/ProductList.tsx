@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import ProductPlaceholder from "@/components/common/ProductPlaceholder";
 
 interface Product {
   id: string;
@@ -163,19 +164,9 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
     const matchesCategory = category === "all" || prod.category === category;
     
     return matchesSearch && matchesCategory;
-  });
-    // Generate a placeholder image path for products
-  const getProductImage = (name: string, category: string = "") => {
-    // Use local images instead of external placeholder service
-    const categoryImages: { [key: string]: string } = {
-      'drinks': '/product-images/drinks.jpg',
-      'food': '/product-images/food.jpg',
-      'snacks': '/product-images/snacks.jpg',
-      'electronics': '/product-images/electronics.jpg'
-    };
-    
-    // Return a category-specific image or default
-    return categoryImages[category?.toLowerCase()] || '/product-images/default.jpg';
+  });  // Check if a product has a valid image
+  const hasValidImage = (product: Product): boolean => {
+    return !!product.image && product.image.startsWith('/');
   };
   
   // Function to determine stock status
@@ -247,12 +238,20 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
           >
             {/* Product image */}
             <div className="relative w-full h-32 overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50">
-              <Image 
-                src={product.image || getProductImage(product.name, product.category)}
-                alt={product.name}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-110"
-              />
+              {product.image ? (
+                <Image 
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                />
+              ) : (
+                <ProductPlaceholder 
+                  category={product.category} 
+                  name={product.name} 
+                  className="transition-transform duration-300 group-hover:scale-110"
+                />
+              )}
               
               {hasDiscount && (
                 <div className="absolute px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full top-2 left-2">
