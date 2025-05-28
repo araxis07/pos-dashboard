@@ -34,8 +34,7 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
         
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Mock data with more variety
+          // Mock data with more variety
         const allProducts: Product[] = [
           { 
             id: "1", 
@@ -45,7 +44,8 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
             category: "drinks", 
             barcode: "8850123456789",
             description: "น้ำดื่มบริสุทธิ์ 600ml",
-            discount: 0
+            discount: 0,
+            image: "https://images.unsplash.com/photo-1560023907-5f339617ea30?q=80&w=300&auto=format"
           },
           { 
             id: "2", 
@@ -55,7 +55,8 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
             category: "food", 
             barcode: "8850987654321",
             description: "ขนมปังโฮลวีท",
-            discount: 10
+            discount: 10,
+            image: "https://images.unsplash.com/photo-1598373182133-52452f7691ef?q=80&w=300&auto=format"
           },
           { 
             id: "3", 
@@ -64,7 +65,8 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
             stock: 24, 
             category: "snacks", 
             barcode: "8850456789123",
-            description: "ขนมขบเคี้ยวรสชีส" 
+            description: "ขนมขบเคี้ยวรสชีส",
+            image: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=300&auto=format"
           },
           { 
             id: "4", 
@@ -74,7 +76,8 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
             category: "drinks", 
             barcode: "8850111222333",
             description: "น้ำอัดลมรสโคลา 325ml",
-            discount: 5
+            discount: 5,
+            image: "https://images.unsplash.com/photo-1596803244535-925769f389fc?q=80&w=300&auto=format"
           },
           { 
             id: "5", 
@@ -83,7 +86,8 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
             stock: 100, 
             category: "food", 
             barcode: "8850333222111",
-            description: "บะหมี่กึ่งสำเร็จรูป" 
+            description: "บะหมี่กึ่งสำเร็จรูป",
+            image: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?q=80&w=300&auto=format" 
           },
           { 
             id: "6", 

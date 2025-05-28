@@ -45,9 +45,48 @@ body {
   .hover-scale:hover {
     transform: scale(1.02);
   }
-
   .btn-primary {
     @apply px-6 py-3 font-medium text-white transition-all duration-200 rounded-lg shadow-md bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg focus:ring-4 focus:ring-blue-300 focus:outline-none;
+  }
+  
+  /* Animation classes */
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, #f1f1f1);
+    border-radius: 10px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #c1c1c1);
+    border-radius: 10px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #a0a0a0);
   }
 
   .btn-secondary {
