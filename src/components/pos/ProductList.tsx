@@ -193,13 +193,13 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {[...Array(8)].map((_, i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-pulse">
+          <div key={i} className="overflow-hidden bg-white border border-gray-200 rounded-xl animate-pulse">
             <div className="h-32 bg-gray-200"></div>
             <div className="p-4 space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="w-3/4 h-4 bg-gray-200 rounded"></div>
+              <div className="w-1/2 h-3 bg-gray-200 rounded"></div>
               <div className="h-8 bg-gray-200 rounded"></div>
             </div>
           </div>
@@ -211,11 +211,11 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+        <div className="flex items-center justify-center w-16 h-16 mb-4 bg-red-100 rounded-full">
           <span className="text-2xl">❌</span>
         </div>
-        <p className="text-red-600 font-medium">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>
-        <p className="text-gray-500 text-sm mt-1">{error.message}</p>
+        <p className="font-medium text-red-600">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>
+        <p className="mt-1 text-sm text-gray-500">{error.message}</p>
       </div>
     );
   }
@@ -224,17 +224,17 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
   if (filteredProducts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <div className="flex items-center justify-center w-20 h-20 mb-4 bg-gray-100 rounded-full">
           <span className="text-3xl">🔍</span>
         </div>
-        <p className="text-gray-600 font-medium text-lg">ไม่พบสินค้าที่ตรงกับการค้นหา</p>
-        <p className="text-gray-400 text-sm mt-1">ลองค้นหาด้วยคำอื่น หรือเปลี่ยนหมวดหมู่</p>
+        <p className="text-lg font-medium text-gray-600">ไม่พบสินค้าที่ตรงกับการค้นหา</p>
+        <p className="mt-1 text-sm text-gray-400">ลองค้นหาด้วยคำอื่น หรือเปลี่ยนหมวดหมู่</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {filteredProducts.map(product => {
         const stockStatus = getStockStatus(product.stock);
         const finalPrice = getFinalPrice(product.price, product.discount);
@@ -246,16 +246,16 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
             className="group bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-200 transform hover:scale-[1.02]"
           >
             {/* Product image */}
-            <div className="relative w-full h-32 bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden">
+            <div className="relative w-full h-32 overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50">
               <Image 
                 src={product.image || getProductImage(product.name, product.category)}
                 alt={product.name}
                 fill
-                className="object-cover group-hover:scale-110 transition-transform duration-300"
+                className="object-cover transition-transform duration-300 group-hover:scale-110"
               />
               
               {hasDiscount && (
-                <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full top-2 left-2">
                   ลด ฿{product.discount}
                 </div>
               )}
@@ -269,11 +269,11 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
             {/* Product details */}
             <div className="p-4">
               <div className="mb-2">
-                <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 group-hover:text-blue-700 transition-colors">
+                <h3 className="text-sm font-semibold text-gray-900 transition-colors line-clamp-1 group-hover:text-blue-700">
                   {product.name}
                 </h3>
                 {product.description && (
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                  <p className="mt-1 text-xs text-gray-500 line-clamp-2">
                     {product.description}
                   </p>
                 )}
@@ -285,7 +285,7 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
                   {hasDiscount ? (
                     <>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-red-600 text-lg">
+                        <span className="text-lg font-bold text-red-600">
                           ฿{finalPrice.toLocaleString()}
                         </span>
                         <span className="text-xs text-gray-400 line-through">
@@ -294,7 +294,7 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
                       </div>
                     </>
                   ) : (
-                    <span className="font-bold text-blue-700 text-lg">
+                    <span className="text-lg font-bold text-blue-700">
                       ฿{product.price.toLocaleString()}
                     </span>
                   )}
@@ -308,7 +308,7 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
               
               {/* Barcode */}
               {product.barcode && (
-                <div className="text-xs text-gray-400 mb-3 font-mono">
+                <div className="mb-3 font-mono text-xs text-gray-400">
                   #{product.barcode}
                 </div>
               )}
@@ -323,7 +323,7 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
                 onClick={() => onAddToCart(product)}
                 disabled={product.stock <= 0}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 {product.stock <= 0 ? 'สินค้าหมด' : 'เพิ่มลงตะกร้า'}

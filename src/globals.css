@@ -107,6 +107,13 @@ body {
   }
 }
 
+/* Chart bar height utilities */
+.chart-bar-1 { height: 20%; }
+.chart-bar-2 { height: 40%; }
+.chart-bar-3 { height: 60%; }
+.chart-bar-4 { height: 80%; }
+.chart-bar-5 { height: 100%; }
+
 /* Animations */
 @keyframes fadeIn {
   from {

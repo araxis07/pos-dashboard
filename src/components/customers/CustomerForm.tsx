@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/common/Button";
 import { formatPhoneNumber } from "@/components/utils/formatter";
 
-interface Customer {
+interface CustomerFormData {
   id?: string;
   name: string;
   email?: string;
@@ -14,9 +14,23 @@ interface Customer {
   notes?: string;
 }
 
+interface Customer {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  memberType?: string;
+  totalPurchase?: number;
+  lastVisit?: Date;
+  notes?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 interface CustomerFormProps {
-  onAdd?: (customer: Customer) => void;
-  onUpdate?: (customer: Customer) => void;
+  onAdd?: (customer: CustomerFormData) => void;
+  onUpdate?: (customer: CustomerFormData) => void;
   editCustomer?: Customer | null;
   memberTypes?: string[];
 }
@@ -28,7 +42,7 @@ export default function CustomerForm({
   memberTypes = ['standard', 'premium', 'vip'] 
 }: CustomerFormProps) {
   
-  const [form, setForm] = useState<Customer>({
+  const [form, setForm] = useState<CustomerFormData>({
     name: "",
     email: "",
     phone: "",
@@ -78,14 +92,14 @@ export default function CustomerForm({
     
     setForm({ ...form, phone: phoneNumber });
   };
-  
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
-    const customerData: Customer = {
-      ...form
+    const customerData: CustomerFormData = {
+      ...form,
+      id: editCustomer?.id
     };
     
     if (editCustomer && onUpdate) {
@@ -148,11 +162,11 @@ export default function CustomerForm({
           />
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
         </div>
-        
-        {/* Member type */}
+          {/* Member type */}
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">ประเภทสมาชิก</label>
+          <label htmlFor="customer-member-type" className="block text-sm font-medium mb-1 text-gray-700">ประเภทสมาชิก</label>
           <select
+            id="customer-member-type"
             className="border border-gray-300 p-2 rounded w-full focus:ring-2 focus:ring-blue-300"
             value={form.memberType || "standard"}
             onChange={e => setForm({ ...form, memberType: e.target.value })}

@@ -22,6 +22,18 @@ interface Customer {
   updatedAt?: Date;
 }
 
+interface CustomerFormData {
+  id?: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  memberType?: string;
+  totalPurchase?: number;
+  lastVisit?: Date;
+  notes?: string;
+}
+
 interface Transaction {
   id: string;
   customerId: string;
@@ -54,11 +66,10 @@ export default function CustomersPage() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [transactionsCustomerId, setTransactionsCustomerId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [memberTypeFilter, setMemberTypeFilter] = useState<string>("all");
-  // Handle adding a new customer
-  const handleAdd = (customer: Omit<Customer, 'id'>) => {
-    const newCustomer = {
-      ...customer,
+  const [memberTypeFilter, setMemberTypeFilter] = useState<string>("all");  // Handle adding a new customer
+  const handleAdd = (customerData: CustomerFormData) => {
+    const newCustomer: Customer = {
+      ...customerData,
       id: Date.now().toString(),
       totalPurchase: 0,
       createdAt: new Date(),
@@ -67,20 +78,21 @@ export default function CustomersPage() {
     
     setCustomers(prev => [...prev, newCustomer]);
     setShowForm(false);
-    toast.success(`เพิ่มลูกค้า ${customer.name} สำเร็จแล้ว`);
+    toast.success(`เพิ่มลูกค้า ${customerData.name} สำเร็จแล้ว`);
   };
 
   // Handle updating a customer
-  const handleUpdate = (customer: Customer) => {
+  const handleUpdate = (customerData: CustomerFormData) => {
+    if (!customerData.id) return;
+    
     setCustomers(prev => 
       prev.map(c => 
-        c.id === customer.id 
-          ? { ...c, ...customer, updatedAt: new Date() } 
+        c.id === customerData.id 
+          ? { ...c, ...customerData, updatedAt: new Date() } 
           : c
       )
-    );
-    setEditCustomer(null);
-    toast.success(`อัพเดตข้อมูลลูกค้า ${customer.name} สำเร็จแล้ว`);
+    );    setEditCustomer(null);
+    toast.success(`อัพเดตข้อมูลลูกค้า ${customerData.name} สำเร็จแล้ว`);
   };
 
   // Handle deleting a customer
@@ -282,8 +294,8 @@ export default function CustomersPage() {
         }}
         title={editCustomer ? "แก้ไขข้อมูลลูกค้า" : "เพิ่มลูกค้าใหม่"}
       >        <CustomerForm 
-          onAdd={handleAdd as any} 
-          onUpdate={handleUpdate as any}
+          onAdd={handleAdd} 
+          onUpdate={handleUpdate}
           editCustomer={editCustomer}
         />
       </Modal>
