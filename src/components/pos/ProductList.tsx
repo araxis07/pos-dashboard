@@ -164,18 +164,18 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
     
     return matchesSearch && matchesCategory;
   });
-  
-  // Generate a placeholder image URL for products
+    // Generate a placeholder image path for products
   const getProductImage = (name: string, category: string = "") => {
-    const categoryEmojis: { [key: string]: string } = {
-      'drinks': '🥤',
-      'food': '🍜',
-      'snacks': '🍪',
-      'electronics': '📱'
+    // Use local images instead of external placeholder service
+    const categoryImages: { [key: string]: string } = {
+      'drinks': '/product-images/drinks.jpg',
+      'food': '/product-images/food.jpg',
+      'snacks': '/product-images/snacks.jpg',
+      'electronics': '/product-images/electronics.jpg'
     };
     
-    const emoji = categoryEmojis[category] || '📦';
-    return `https://via.placeholder.com/120x120/6366f1/ffffff?text=${emoji}`;
+    // Return a category-specific image or default
+    return categoryImages[category?.toLowerCase()] || '/product-images/default.jpg';
   };
   
   // Function to determine stock status
