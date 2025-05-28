@@ -2,7 +2,20 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/common/Button";
 
 interface User {
-  id?: string;
+  id: string;
+  username: string;
+  fullName: string;
+  email?: string;
+  password?: string;
+  role: string;
+  status: "active" | "inactive";
+  avatar?: string;
+  lastLogin?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface UserFormData {
   username: string;
   fullName: string;
   email?: string;
@@ -14,7 +27,7 @@ interface User {
 }
 
 interface UserFormProps {
-  onAdd?: (user: User) => void;
+  onAdd?: (user: UserFormData) => void;
   onUpdate?: (user: User) => void;
   editUser?: User | null;
   roles?: string[];
@@ -27,7 +40,7 @@ export default function UserForm({
   roles = ['admin', 'manager', 'cashier', 'staff'] 
 }: UserFormProps) {
   
-  const [form, setForm] = useState<User>({
+  const [form, setForm] = useState<UserFormData>({
     username: "",
     fullName: "",
     email: "",
@@ -38,13 +51,20 @@ export default function UserForm({
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
-  
   // Set form data when editing an existing user
   useEffect(() => {
     if (editUser) {
-      // Don't include password when editing
-      const { password, ...userWithoutPassword } = editUser;
-      setForm(userWithoutPassword);
+      // Extract only the form fields needed
+      setForm({
+        username: editUser.username,
+        fullName: editUser.fullName,
+        email: editUser.email || "",
+        password: "", // Clear password field for editing
+        role: editUser.role,
+        status: editUser.status,
+        avatar: editUser.avatar,
+        lastLogin: editUser.lastLogin
+      });
     }
   }, [editUser]);
   
@@ -76,25 +96,24 @@ export default function UserForm({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
-    const userData: User = {
-      ...form,
-    };
-    
-    // If editing and password is empty, don't include it
-    if (editUser && !form.password) {
-      delete userData.password;
-    }
-    
     if (editUser && onUpdate) {
+      // For updates, include the id and build complete user object
+      const userData: User = {
+        ...editUser,
+        ...form,
+        id: editUser.id,
+        // If password is empty, keep the existing password
+        password: form.password || editUser.password
+      };
       onUpdate(userData);
     } else if (onAdd) {
-      onAdd(userData);
+      // For new users, just pass the form data
+      onAdd(form);
     }
     
     // Reset form if adding
@@ -199,11 +218,11 @@ export default function UserForm({
           </div>
           {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
         </div>
-        
-        {/* Role */}
+          {/* Role */}
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">บทบาท <span className="text-red-500">*</span></label>
+          <label htmlFor="user-role" className="block text-sm font-medium mb-1 text-gray-700">บทบาท <span className="text-red-500">*</span></label>
           <select
+            id="user-role"
             className="border border-gray-300 p-2 rounded w-full focus:ring-2 focus:ring-blue-300"
             value={form.role}
             onChange={e => setForm({ ...form, role: e.target.value })}

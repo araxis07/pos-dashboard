@@ -2,24 +2,29 @@
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from 'react';
 
 interface NavItem {
   href: string;
   label: string;
   icon: string;
+  badge?: string;
 }
 
 export default function Sidebar() {
   const pathname = usePathname();
-    const navItems: NavItem[] = [
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  const navItems: NavItem[] = [
     { href: '/dashboard', label: 'แดชบอร์ด', icon: 'chart-bar' },
-    { href: '/pos', label: 'ขายสินค้า', icon: 'shopping-cart' },
+    { href: '/pos', label: 'ขายสินค้า', icon: 'shopping-cart', badge: 'HOT' },
     { href: '/products', label: 'สินค้า', icon: 'cube' },
     { href: '/customers', label: 'ลูกค้า', icon: 'users' },
     { href: '/reports', label: 'รายงาน', icon: 'document-report' },
     { href: '/users', label: 'ผู้ใช้', icon: 'user-circle' },
   ];
-    const icons = {
+  
+  const icons = {
     'chart-bar': (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
         <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
@@ -53,52 +58,125 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="bg-white shadow-lg h-full w-56 p-4 hidden md:block">
-      <div className="mb-8 mt-2">
-        <div className="flex items-center justify-center mb-4">
-          <div className="relative w-12 h-12">
-            <Image 
-              src="/window.svg" 
-              alt="Logo" 
-              fill
-              className="object-contain"
-            />
-          </div>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-500 text-xs">ระบบจัดการร้านค้า</p>
+    <aside className={`bg-white shadow-xl h-full transition-all duration-300 ease-in-out hidden md:block border-r border-gray-100 ${isCollapsed ? 'w-16' : 'w-64'}`}>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          {!isCollapsed && (
+            <div className="flex items-center gap-3">
+              <div className="relative w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-2">
+                <Image 
+                  src="/window.svg" 
+                  alt="Logo" 
+                  fill
+                  className="object-contain invert"
+                />
+              </div>
+              <div>
+                <h2 className="font-bold text-gray-900">POS System</h2>
+                <p className="text-xs text-gray-500">ระบบจัดการร้านค้า</p>
+              </div>
+            </div>
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title={isCollapsed ? "ขยายเมนู" : "ย่อเมนู"}
+          >
+            <svg className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+          </button>
         </div>
       </div>
       
-      <div className="space-y-1">
-        {navItems.map(item => {
+      {/* Navigation */}
+      <div className="p-4 space-y-2">
+        {navItems.map((item, index) => {
           const isActive = pathname === item.href;
           return (
             <Link 
               key={item.href}
               href={item.href} 
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              className={`group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 relative ${
                 isActive 
-                  ? 'bg-blue-100 text-blue-800 font-medium' 
-                  : 'hover:bg-gray-100 text-gray-700'
-              }`}
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/25' 
+                  : 'hover:bg-gray-50 text-gray-700 hover:text-blue-600'
+              } ${isCollapsed ? 'justify-center' : ''}`}
+              title={isCollapsed ? item.label : undefined}
             >
-              <span className={isActive ? 'text-blue-700' : 'text-gray-500'}>
+              <span className={`${isActive ? 'text-white' : 'text-gray-500 group-hover:text-blue-600'} transition-colors`}>
                 {icons[item.icon as keyof typeof icons]}
               </span>
-              {item.label}
-              {isActive && (
-                <div className="ml-auto w-1.5 h-5 bg-blue-600 rounded-full"></div>
+              
+              {!isCollapsed && (
+                <>
+                  <span className="font-medium flex-1">{item.label}</span>
+                  
+                  {item.badge && (
+                    <span className="px-2 py-0.5 text-xs font-bold bg-orange-500 text-white rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                  
+                  {isActive && (
+                    <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-white rounded-l-full"></div>
+                  )}
+                </>
+              )}
+              
+              {isCollapsed && isActive && (
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-blue-600 rounded-l-full"></div>
               )}
             </Link>
           );
         })}
       </div>
       
-      <div className="absolute bottom-8 left-4 right-4">
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <p className="text-xs text-blue-800 font-medium">พบปัญหาการใช้งาน?</p>
-          <p className="text-xs text-blue-600 mt-1">ติดต่อฝ่ายเทคนิค</p>
+      {/* Quick Actions */}
+      {!isCollapsed && (
+        <div className="p-4 mt-8">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-blue-900">เริ่มขายเลย!</p>
+                <p className="text-xs text-blue-600">ไปหน้าขายสินค้า</p>
+              </div>
+            </div>
+            <Link href="/pos">
+              <button className="w-full bg-white text-blue-700 border border-blue-200 text-sm py-2 px-3 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 font-medium">
+                เริ่มขาย
+              </button>
+            </Link>
+          </div>
+        </div>
+      )}
+      
+      {/* Support Section */}
+      {!isCollapsed && (
+        <div className="absolute bottom-4 left-4 right-4">
+          <div className="bg-gray-50 p-3 rounded-xl border border-gray-200">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-xs font-semibold text-gray-700">ต้องการความช่วยเหลือ?</p>
+            </div>
+            <p className="text-xs text-gray-600 mb-2">ติดต่อฝ่ายเทคนิค</p>
+            <button className="w-full bg-white text-gray-700 border border-gray-300 text-xs py-1.5 rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-200">
+              แจ้งปัญหา
+            </button>
+          </div>
+        </div>
+      )}
+    </aside>
+  );
+}
           <button className="mt-2 w-full bg-white text-blue-700 border border-blue-300 text-xs py-1.5 rounded-lg hover:bg-blue-700 hover:text-white transition-colors">
             แจ้งปัญหา
           </button>

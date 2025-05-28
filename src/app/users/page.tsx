@@ -71,12 +71,11 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-
   // Handle adding a new user
-  const handleAdd = (user: Omit<User, "id">) => {
+  const handleAdd = (userData: Omit<User, "id">) => {
     // Hash password would happen on the backend - simulating here
-    const newUser = {
-      ...user,
+    const newUser: User = {
+      ...userData,
       id: Date.now().toString(),
       createdAt: new Date(),
       updatedAt: new Date()
@@ -84,26 +83,26 @@ export default function UsersPage() {
     
     setUsers(prev => [...prev, newUser]);
     setShowForm(false);
-    toast.success(`เพิ่มผู้ใช้ ${user.username} สำเร็จแล้ว`);
+    toast.success(`เพิ่มผู้ใช้ ${userData.username} สำเร็จแล้ว`);
   };
 
   // Handle updating a user
-  const handleUpdate = (user: User) => {
+  const handleUpdate = (userData: User) => {
+    const updatedUser: User = {
+      ...userData,
+      id: userData.id || "", // Ensure id is always string
+      updatedAt: new Date(),
+      // Don't update password if it wasn't provided
+      password: userData.password || users.find(u => u.id === userData.id)?.password
+    };
+    
     setUsers(prev => 
       prev.map(u => 
-        u.id === user.id 
-          ? { 
-              ...u, 
-              ...user, 
-              updatedAt: new Date(),
-              // Don't update password if it wasn't provided
-              password: user.password || u.password
-            } 
-          : u
+        u.id === updatedUser.id ? updatedUser : u
       )
     );
     setEditUser(null);
-    toast.success(`อัพเดตผู้ใช้ ${user.username} สำเร็จแล้ว`);
+    toast.success(`อัพเดตผู้ใช้ ${updatedUser.username} สำเร็จแล้ว`);
   };
 
   // Handle deleting a user
@@ -151,14 +150,17 @@ export default function UsersPage() {
     
     return matchesSearch && matchesRole && matchesStatus;
   });
-
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-blue-900">จัดการผู้ใช้งาน</h1>
-          <p className="text-gray-500">จำนวนผู้ใช้งานทั้งหมด {users.length} คน</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-blue-900 flex items-center gap-3">
+            👥 จัดการผู้ใช้งาน
+          </h1>
+          <p className="text-gray-600 mt-1">
+            จำนวนผู้ใช้งานทั้งหมด <span className="font-semibold text-blue-700">{users.length}</span> คน
+          </p>
         </div>
         
         <div className="flex gap-2">
@@ -168,7 +170,7 @@ export default function UsersPage() {
               size="sm"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3m0 0l3 3m-3-3v12m6-2v2m0-6V8m0 6h-4m8 0a8 8 0 10-16 0 8 8 0 0016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
                 </svg>
               }
             >
@@ -189,9 +191,68 @@ export default function UsersPage() {
           </Button>
         </div>
       </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+          <div className="flex items-center">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-blue-100">ผู้ใช้ทั้งหมด</p>
+              <p className="text-2xl font-bold">{users.length}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
+          <div className="flex items-center">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-green-100">เปิดใช้งาน</p>
+              <p className="text-2xl font-bold">{users.filter(u => u.status === 'active').length}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0">
+          <div className="flex items-center">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-red-100">ปิดใช้งาน</p>
+              <p className="text-2xl font-bold">{users.filter(u => u.status === 'inactive').length}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0">
+          <div className="flex items-center">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-purple-100">ผู้ดูแลระบบ</p>
+              <p className="text-2xl font-bold">{users.filter(u => u.role === 'admin').length}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
       
       {/* Filters */}
-      <Card className="p-4">
+      <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
@@ -200,47 +261,50 @@ export default function UsersPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <input 
+            <input
               type="text" 
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white/90 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all" 
               placeholder="ค้นหาผู้ใช้..." 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
-          </div>
-          
+          </div>          
           {/* Role filter */}
           <div className="md:w-48">
+            <label htmlFor="role-filter" className="sr-only">กรองตามบทบาท</label>
             <select
+              id="role-filter"
               value={roleFilter}
               onChange={e => setRoleFilter(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md py-2 px-3 bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="block w-full border border-gray-300 rounded-lg py-2 px-3 bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all"
             >
-              <option value="all">ทุกบทบาท</option>
-              <option value="admin">ผู้ดูแลระบบ</option>
-              <option value="manager">ผู้จัดการ</option>
-              <option value="cashier">แคชเชียร์</option>
-              <option value="staff">พนักงาน</option>
+              <option value="all">🎭 ทุกบทบาท</option>
+              <option value="admin">👑 ผู้ดูแลระบบ</option>
+              <option value="manager">📊 ผู้จัดการ</option>
+              <option value="cashier">💰 แคชเชียร์</option>
+              <option value="staff">👤 พนักงาน</option>
             </select>
           </div>
           
           {/* Status filter */}
           <div className="md:w-48">
+            <label htmlFor="status-filter" className="sr-only">กรองตามสถานะ</label>
             <select
+              id="status-filter"
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md py-2 px-3 bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="block w-full border border-gray-300 rounded-lg py-2 px-3 bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all"
             >
-              <option value="all">ทุกสถานะ</option>
-              <option value="active">เปิดใช้งาน</option>
-              <option value="inactive">ปิดใช้งาน</option>
+              <option value="all">📊 ทุกสถานะ</option>
+              <option value="active">✅ เปิดใช้งาน</option>
+              <option value="inactive">❌ ปิดใช้งาน</option>
             </select>
           </div>
         </div>
       </Card>
       
       {/* User table */}
-      <Card>
+      <Card className="bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg">
         <UserTable 
           users={filteredUsers} 
           onEdit={setEditUser} 
@@ -264,8 +328,7 @@ export default function UsersPage() {
           editUser={editUser}
         />
       </Modal>
-      
-      {/* Delete confirmation modal */}
+        {/* Delete confirmation modal */}
       <Modal
         open={deleteConfirmId !== null}
         onClose={() => setDeleteConfirmId(null)}
@@ -273,13 +336,28 @@ export default function UsersPage() {
         size="sm"
       >
         <div className="text-center py-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <p className="text-gray-700 mb-6">คุณต้องการลบผู้ใช้รายนี้ใช่หรือไม่? การกระทำนี้ไม่สามารถเรียกคืนได้</p>
+          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">ลบผู้ใช้งาน</h3>
+          <p className="text-gray-600 mb-6">คุณต้องการลบผู้ใช้รายนี้ใช่หรือไม่? การกระทำนี้ไม่สามารถเรียกคืนได้</p>
           <div className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>ยกเลิก</Button>
-            <Button variant="danger" onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}>ลบผู้ใช้</Button>
+            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+              ยกเลิก
+            </Button>
+            <Button 
+              variant="danger" 
+              onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              }
+            >
+              ลบผู้ใช้
+            </Button>
           </div>
         </div>
       </Modal>

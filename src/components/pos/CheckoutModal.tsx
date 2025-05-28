@@ -35,7 +35,8 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
   
   // Calculate change
   const change = receivedAmount ? Number(receivedAmount) - total : 0;
-    // State for receipt generation
+  
+  // State for receipt generation
   const [showReceiptButtons, setShowReceiptButtons] = useState(false);
   
   // Handle confirming the payment
@@ -53,10 +54,18 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
   const handleFinalConfirm = () => {
     setShowReceiptButtons(false);
     onConfirm();
+  };
+  
+  // Reset states when modal closes
+  const handleClose = () => {
+    setShowReceiptButtons(false);
+    setReceivedAmount('');
+    setPaymentMethod('cash');
+    onClose();
   };  // Custom footer with action buttons
   const modalFooter = showReceiptButtons ? (
-    <>
-      <div className="flex items-center mr-auto">
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center">
         <Receipt 
           cart={cart} 
           paymentMethod={paymentMethod}
@@ -67,26 +76,39 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
       <Button 
         variant="success" 
         onClick={handleFinalConfirm}
+        className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
       >
+        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
         เสร็จสิ้น
       </Button>
-    </>
+    </div>
   ) : (
-    <>
-      <Button variant="outline" onClick={onClose}>ยกเลิก</Button>
+    <div className="flex space-x-3">
+      <Button 
+        variant="outline" 
+        onClick={handleClose}
+        className="flex-1"
+      >
+        ยกเลิก
+      </Button>
       <Button 
         variant="success" 
         onClick={handlePaymentConfirmation}
         disabled={paymentMethod === 'cash' && (Number(receivedAmount) < total || !receivedAmount)}
+        className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 disabled:from-gray-400 disabled:to-gray-400"
       >
+        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
         ยืนยันชำระเงิน
       </Button>
-    </>
-  );
-    return (
+    </div>
+  );    return (
     <Modal 
       open={open} 
-      onClose={showReceiptButtons ? handleFinalConfirm : onClose} 
+      onClose={showReceiptButtons ? handleFinalConfirm : handleClose} 
       title={showReceiptButtons ? "ชำระเงินสำเร็จ" : "ชำระเงิน"}
       description={showReceiptButtons 
         ? "การชำระเงินเสร็จสมบูรณ์ คุณสามารถพิมพ์ใบเสร็จได้" 
@@ -94,161 +116,189 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
       }
       footer={modalFooter}
       size="lg"
-    >      {showReceiptButtons ? (
-        <div className="text-center py-6">
-          <div className="w-20 h-20 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    >
+      {showReceiptButtons ? (
+        <div className="text-center py-8">
+          <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full mx-auto flex items-center justify-center mb-6">
+            <svg className="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-2xl font-bold text-green-700 mb-2">ชำระเงินสำเร็จ!</h3>
-          <p className="text-gray-600 mb-8">คุณสามารถพิมพ์ใบเสร็จหรือปิดหน้าต่างนี้เพื่อทำรายการอื่น</p>
+          <h3 className="text-3xl font-bold text-green-700 mb-3">ชำระเงินสำเร็จ!</h3>
+          <p className="text-gray-600 mb-8 text-lg">คุณสามารถพิมพ์ใบเสร็จหรือปิดหน้าต่างนี้เพื่อทำรายการอื่น</p>
           
-          <div className="border rounded-md p-4 bg-blue-50 text-left max-w-md mx-auto mb-6">
-            <h4 className="font-medium text-blue-800 mb-2">รายละเอียดการชำระเงิน</h4>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>วิธีชำระเงิน:</div>
-              <div className="font-medium">
-                {paymentMethod === 'cash' ? 'เงินสด' : paymentMethod === 'card' ? 'บัตรเครดิต' : 'พร้อมเพย์'}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 max-w-md mx-auto mb-6">
+            <h4 className="font-semibold text-blue-800 mb-4 text-lg">รายละเอียดการชำระเงิน</h4>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="text-gray-600">วิธีชำระเงิน:</div>
+              <div className="font-medium text-gray-900">
+                {paymentMethod === 'cash' ? '💵 เงินสด' : paymentMethod === 'card' ? '💳 บัตรเครดิต' : '📱 พร้อมเพย์'}
               </div>
               
               {paymentMethod === 'cash' && (
                 <>
-                  <div>จำนวนเงินที่รับ:</div>
-                  <div className="font-medium">{formatCurrency(Number(receivedAmount))}</div>
+                  <div className="text-gray-600">จำนวนเงินที่รับ:</div>
+                  <div className="font-medium text-gray-900">{formatCurrency(Number(receivedAmount))}</div>
                   
-                  <div>เงินทอน:</div>
-                  <div className="font-medium">{formatCurrency(change)}</div>
+                  <div className="text-gray-600">เงินทอน:</div>
+                  <div className="font-medium text-green-600">{formatCurrency(change)}</div>
                 </>
               )}
               
-              <div>จำนวนรายการ:</div>
-              <div className="font-medium">{cart.reduce((sum, item) => sum + item.qty, 0)} ชิ้น</div>
+              <div className="text-gray-600">จำนวนรายการ:</div>
+              <div className="font-medium text-gray-900">{cart.reduce((sum, item) => sum + item.qty, 0)} ชิ้น</div>
               
-              <div>ยอดรวมทั้งสิ้น:</div>
-              <div className="font-medium text-blue-700">{formatCurrency(total)}</div>
+              <div className="text-gray-600 border-t border-blue-200 pt-2">ยอดรวมทั้งสิ้น:</div>
+              <div className="font-bold text-blue-700 border-t border-blue-200 pt-2 text-lg">{formatCurrency(total)}</div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        </div>      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left column - Order summary */}
-          <div>
-            <h3 className="font-medium text-lg mb-3">สรุปรายการ</h3>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">สรุปรายการ</h3>
+            </div>
           
-          <div className="border rounded-md mb-4 overflow-hidden">
-            <div className="max-h-64 overflow-y-auto">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="py-2 px-3 text-left text-xs font-medium text-gray-500">รายการ</th>
-                    <th className="py-2 px-3 text-center text-xs font-medium text-gray-500">จำนวน</th>
-                    <th className="py-2 px-3 text-right text-xs font-medium text-gray-500">ราคา</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {cart.map((item) => (
-                    <tr key={item.id}>
-                      <td className="py-2 px-3 text-sm">{item.name}</td>
-                      <td className="py-2 px-3 text-sm text-center">{item.qty}</td>
-                      <td className="py-2 px-3 text-sm text-right">{formatCurrency(item.price * item.qty)}</td>
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="max-h-64 overflow-y-auto">
+                <table className="min-w-full">
+                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                    <tr>
+                      <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">รายการ</th>
+                      <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700">จำนวน</th>
+                      <th className="py-3 px-4 text-right text-sm font-semibold text-gray-700">ราคา</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {/* Order totals */}
-            <div className="bg-gray-50 p-3 border-t">
-              <div className="flex justify-between text-sm mb-1">
-                <span>จำนวนรายการ:</span>
-                <span>{cart.reduce((sum, item) => sum + item.qty, 0)} ชิ้น</span>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {cart.map((item, index) => (
+                      <tr key={item.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="py-3 px-4 text-sm text-gray-900">{item.name}</td>
+                        <td className="py-3 px-4 text-sm text-center">
+                          <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium">
+                            {item.qty}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm text-right font-medium text-gray-900">
+                          {formatCurrency(item.price * item.qty)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>ราคารวม:</span>
-                <span>{formatCurrency(subTotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>ภาษีมูลค่าเพิ่ม (รวมใน):</span>
-                <span>{formatCurrency(vat)}</span>
-              </div>
-              <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                <span>รวมทั้งสิ้น:</span>
-                <span className="text-blue-700">{formatCurrency(total)}</span>
+              
+              {/* Order totals */}
+              <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-t border-gray-200 space-y-2">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>จำนวนรายการ:</span>
+                  <span className="font-medium">{cart.reduce((sum, item) => sum + item.qty, 0)} ชิ้น</span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>ราคารวม:</span>
+                  <span className="font-medium">{formatCurrency(subTotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>ภาษีมูลค่าเพิ่ม 7% (รวมใน):</span>
+                  <span className="font-medium">{formatCurrency(vat)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-xl pt-3 border-t border-gray-300">
+                  <span className="text-gray-900">รวมทั้งสิ้น:</span>
+                  <span className="text-indigo-600">{formatCurrency(total)}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         
-        {/* Right column - Payment methods */}
-        <div>
-          <h3 className="font-medium text-lg mb-3">วิธีการชำระเงิน</h3>
+          {/* Right column - Payment methods */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">วิธีการชำระเงิน</h3>
+            </div>
           
-          {/* Payment method selection */}
-          <div className="flex gap-2 mb-4">
-            <button
-              className={`flex-1 py-2 px-4 rounded-md border ${paymentMethod === 'cash' 
-                ? 'bg-blue-50 border-blue-500 text-blue-700' 
-                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-              onClick={() => setPaymentMethod('cash')}
-            >
-              เงินสด
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 rounded-md border ${paymentMethod === 'card' 
-                ? 'bg-blue-50 border-blue-500 text-blue-700' 
-                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-              onClick={() => setPaymentMethod('card')}
-            >
-              บัตรเครดิต
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 rounded-md border ${paymentMethod === 'promptpay' 
-                ? 'bg-blue-50 border-blue-500 text-blue-700' 
-                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-              onClick={() => setPaymentMethod('promptpay')}
-            >
-              พร้อมเพย์
-            </button>
-          </div>
-          
+            {/* Payment method selection */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <button
+                className={`p-4 rounded-xl border-2 transition-all duration-200 ${paymentMethod === 'cash' 
+                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-500 text-green-700 shadow-lg transform scale-105' 
+                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'}`}
+                onClick={() => setPaymentMethod('cash')}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-2">💵</div>
+                  <div className="font-medium text-sm">เงินสด</div>
+                </div>
+              </button>
+              <button
+                className={`p-4 rounded-xl border-2 transition-all duration-200 ${paymentMethod === 'card' 
+                  ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-500 text-blue-700 shadow-lg transform scale-105' 
+                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'}`}
+                onClick={() => setPaymentMethod('card')}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-2">💳</div>
+                  <div className="font-medium text-sm">บัตรเครดิต</div>
+                </div>
+              </button>
+              <button
+                className={`p-4 rounded-xl border-2 transition-all duration-200 ${paymentMethod === 'promptpay' 
+                  ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-500 text-purple-700 shadow-lg transform scale-105' 
+                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'}`}
+                onClick={() => setPaymentMethod('promptpay')}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-2">📱</div>
+                  <div className="font-medium text-sm">พร้อมเพย์</div>
+                </div>
+              </button>
+            </div>          
           {/* Cash payment form */}
           {paymentMethod === 'cash' && (
-            <div className="border rounded-md p-4">
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-medium mb-1">
-                  รับเงินมา
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 space-y-6">
+              <div>
+                <label className="block text-gray-700 text-sm font-semibold mb-3">
+                  💵 รับเงินมา
                 </label>
-                <div className="flex items-center">
-                  <span className="text-gray-500 mr-2">฿</span>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">฿</span>
                   <input
                     type="number"
                     value={receivedAmount}
                     onChange={(e) => setReceivedAmount(e.target.value)}
                     placeholder="ระบุจำนวนเงิน"
-                    className="border rounded-md px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-8 pr-4 py-3 border border-green-300 rounded-xl text-lg font-medium focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
                   />
                 </div>
               </div>
               
               {/* Quick amount buttons */}
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-medium mb-1">
-                  จำนวนเงินด่วน
+              <div>
+                <label className="block text-gray-700 text-sm font-semibold mb-3">
+                  ⚡ จำนวนเงินด่วน
                 </label>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-4 gap-3">
                   {quickAmounts.map((amount) => (
                     <button
                       key={amount}
                       onClick={() => setReceivedAmount(amount.toString())}
-                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-md text-sm"
+                      className="bg-white hover:bg-green-100 text-gray-800 hover:text-green-700 py-3 rounded-xl text-sm font-medium border border-green-200 hover:border-green-300 transition-all duration-200 shadow-sm hover:shadow-md"
                     >
-                      ฿{amount}
+                      ฿{amount.toLocaleString()}
                     </button>
                   ))}
                   <button
                     onClick={() => setReceivedAmount(total.toString())}
-                    className="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 py-2 rounded-md text-sm"
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     พอดี
                   </button>
@@ -257,11 +307,15 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
               
               {/* Change calculation */}
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-1">
-                  เงินทอน
+                <label className="block text-gray-700 text-sm font-semibold mb-3">
+                  💰 เงินทอน
                 </label>
-                <div className="bg-gray-100 rounded-md px-3 py-3 text-right">
-                  <span className={`text-xl font-bold ${change < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                <div className={`rounded-xl px-4 py-4 text-right border-2 ${
+                  change >= 0 ? 'bg-green-100 border-green-300' : 'bg-red-100 border-red-300'
+                }`}>
+                  <span className={`text-2xl font-bold ${
+                    change >= 0 ? 'text-green-700' : 'text-red-600'
+                  }`}>
                     {change >= 0 ? formatCurrency(change) : 'รอรับเงิน'}
                   </span>
                 </div>
@@ -271,28 +325,41 @@ export default function CheckoutModal({ open, onClose, onConfirm, cart }: Checko
           
           {/* Card payment form */}
           {paymentMethod === 'card' && (
-            <div className="border rounded-md p-4 bg-gray-50 text-center py-8">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
-              <p className="text-gray-600 mb-2">กรุณาให้ลูกค้าสแกนบัตร</p>
-              <p className="text-sm text-gray-500">หรือใช้เครื่องรูดบัตรอื่น ๆ</p>
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-8 text-center">
+              <div className="w-20 h-20 bg-white rounded-full mx-auto flex items-center justify-center mb-6 shadow-lg">
+                <svg className="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+              </div>
+              <h4 className="text-lg font-semibold text-blue-800 mb-2">💳 ชำระด้วยบัตรเครดิต</h4>
+              <p className="text-blue-600 mb-4">กรุณาให้ลูกค้าสแกนบัตร</p>
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <p className="text-sm text-gray-600">ยอดรวม: <span className="font-bold text-blue-600">{formatCurrency(total)}</span></p>
+              </div>
             </div>
           )}
-            {/* PromptPay QR payment form */}
+            
+          {/* PromptPay QR payment form */}
           {paymentMethod === 'promptpay' && (
-            <div className="border rounded-md p-4 bg-gray-50 text-center py-6">
-              <div className="w-48 h-48 mx-auto mb-4 bg-white p-2 border">
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500">QR Code</span>
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-8 text-center">
+              <h4 className="text-lg font-semibold text-purple-800 mb-6">📱 ชำระด้วยพร้อมเพย์</h4>
+              <div className="bg-white rounded-xl p-4 border border-purple-200 mb-6 inline-block">
+                <div className="w-48 h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center">
+                    <svg className="w-16 h-16 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h4" />
+                    </svg>
+                    <p className="text-gray-500 text-sm">QR Code</p>
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-600 mb-2">สแกน QR Code เพื่อชำระเงิน</p>
-              <p className="text-sm text-gray-500">จำนวนเงิน: {formatCurrency(total)}</p>
+              <p className="text-purple-600 mb-2 font-medium">สแกน QR Code เพื่อชำระเงิน</p>
+              <p className="text-purple-800 font-bold text-lg">จำนวนเงิน: {formatCurrency(total)}</p>
             </div>
           )}
         </div>
       </div>
       )}
-    </Modal>  );
+    </Modal>
+  );
 }

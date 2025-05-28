@@ -107,48 +107,115 @@ export default function ProductsPage() {
     
     return matchesSearch && matchesCategory && matchesStockFilter;
   });
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-blue-900">จัดการสินค้า</h1>
-          <p className="text-gray-500">จำนวนสินค้าทั้งหมด {products.length} รายการ</p>
-        </div>
-        
-        <div className="flex gap-2">
-          <Link href="/pos">
-            <Button 
-              variant="outline" 
-              size="sm"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="space-y-8 p-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              จัดการสินค้า
+            </h1>
+            <p className="text-gray-600 text-lg flex items-center space-x-2">
+              <span>จำนวนสินค้าทั้งหมด</span>
+              <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-semibold">
+                {products.length} รายการ
+              </span>
+            </p>
+          </div>
+          
+          <div className="flex gap-3">
+            <Link href="/pos">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-white/80 backdrop-blur-sm hover:bg-white/90 border-indigo-200 text-indigo-700 hover:text-indigo-800"
+              >
+                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-              }
+                ไปที่หน้าขาย
+              </Button>
+            </Link>
+            
+            <Button 
+              variant="primary"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              onClick={() => setShowForm(true)}
             >
-              ไปที่หน้าขาย
-            </Button>
-          </Link>
-          
-          <Button 
-            variant="primary"
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-            }
-            onClick={() => setShowForm(true)}
-          >
-            เพิ่มสินค้า
-          </Button>
+              เพิ่มสินค้า
+            </Button>
+          </div>
         </div>
-      </div>
-      
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-col md:flex-row gap-4">
+        
+        {/* Filters */}
+        <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl p-6">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Search */}
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                🔍 ค้นหาสินค้า
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="ค้นหาด้วยชื่อสินค้าหรือบาร์โค้ด..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/90 backdrop-blur-sm"
+                />
+                <svg 
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+            
+            {/* Category Filter */}
+            <div className="w-full lg:w-64">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                📂 หมวดหมู่
+              </label>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/90 backdrop-blur-sm"
+              >
+                <option value="all">ทุกหมวดหมู่</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category === 'drinks' ? '🥤 เครื่องดื่ม' :
+                     category === 'food' ? '🍞 อาหาร' :
+                     category === 'snacks' ? '🍿 ขนม' : category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Stock Filter */}
+            <div className="w-full lg:w-64">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                📊 สถานะสต็อก
+              </label>
+              <select
+                value={stockFilter}
+                onChange={(e) => setStockFilter(e.target.value as "all" | "low" | "out")}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/90 backdrop-blur-sm"
+              >
+                <option value="all">ทุกสถานะ</option>
+                <option value="low">🔶 สินค้าใกล้หมด (≤10)</option>
+                <option value="out">🔴 สินค้าหมด</option>
+              </select>
+            </div>
+          </div>
+        </Card>
           {/* Search */}
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
