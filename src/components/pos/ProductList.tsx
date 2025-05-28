@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { formatCurrency } from "@/components/utils/formatter";
-import LoadingState from "@/components/common/LoadingState";
 
 interface Product {
   id: string;
@@ -330,55 +328,9 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
                 </svg>
                 {product.stock <= 0 ? 'สินค้าหมด' : 'เพิ่มลงตะกร้า'}
               </button>
-            </div>
-          </div>
+            </div>          </div>
         );
       })}
-    </div>
-  );
-}
-          {/* Product image */}
-          <div className="relative w-full h-28 bg-gray-100">
-            <Image 
-              src={product.image || getProductImage(product.name)}
-              alt={product.name}
-              layout="fill"
-              objectFit="cover"
-            />
-          </div>
-          
-          {/* Product details */}
-          <div className="p-3">
-            <div className="flex justify-between items-start mb-1">
-              <h3 className="font-medium text-gray-900">{product.name}</h3>
-              <span className="font-bold text-blue-700">{formatCurrency(product.price)}</span>
-            </div>
-            
-            <div className="flex justify-between items-center mb-3">
-              <div className={`text-xs px-2 py-1 rounded-full ${getStockStatusColor(product.stock)}`}>
-                สต็อก: {product.stock}
-              </div>
-              
-              {product.barcode && (
-                <div className="text-xs text-gray-500">
-                  {product.barcode}
-                </div>
-              )}
-            </div>
-            
-            <button 
-              className="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
-              onClick={() => onAddToCart(product)}
-              disabled={product.stock <= 0}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              เพิ่มลงตะกร้า
-            </button>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

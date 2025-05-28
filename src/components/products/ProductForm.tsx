@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/common/Button";
 
-interface Product {
+interface ProductFormData {
   id?: string;
   name: string;
   price: number | string;
@@ -12,15 +12,28 @@ interface Product {
   supplier?: string;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  stock: number;
+  category?: string;
+  barcode?: string;
+  costPrice?: number;
+  supplier?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 interface ProductFormProps {
-  onAdd?: (product: Product) => void;
-  onUpdate?: (product: Product) => void;
+  onAdd?: (product: ProductFormData) => void;
+  onUpdate?: (product: ProductFormData) => void;
   editProduct?: Product | null;
   categories?: string[];
 }
 
 export default function ProductForm({ onAdd, onUpdate, editProduct, categories = [] }: ProductFormProps) {
-  const [form, setForm] = useState<Product>({
+  const [form, setForm] = useState<ProductFormData>({
     name: "",
     price: "",
     stock: "",
@@ -71,14 +84,14 @@ export default function ProductForm({ onAdd, onUpdate, editProduct, categories =
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
-    const productData: Product = {
+    const productData: ProductFormData = {
       ...form,
+      id: editProduct?.id,
       price: Number(form.price),
       stock: Number(form.stock),
       costPrice: form.costPrice ? Number(form.costPrice) : undefined
@@ -166,12 +179,12 @@ export default function ProductForm({ onAdd, onUpdate, editProduct, categories =
           />
           {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
         </div>
-        
-        {/* Category with option to add new */}
+          {/* Category with option to add new */}
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">หมวดหมู่</label>
+          <label htmlFor="product-category" className="block text-sm font-medium mb-1 text-gray-700">หมวดหมู่</label>
           <div className="flex gap-2">
             <select
+              id="product-category"
               className="border border-gray-300 p-2 rounded flex-1 focus:ring-2 focus:ring-blue-300"
               value={form.category || ""}
               onChange={e => setForm({ ...form, category: e.target.value })}

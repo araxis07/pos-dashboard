@@ -1,7 +1,4 @@
-import { Card } from "@/components/common/Card";
-import { Button } from "@/components/common/Button";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function Home() {
   const features = [
@@ -118,11 +115,9 @@ export default function Home() {
                       <span className="text-xs text-gray-500">7 วันล่าสุด</span>
                     </div>
                     <div className="flex items-end gap-1 h-16">
-                      {[40, 65, 55, 80, 70, 85, 95].map((height, index) => (
-                        <div 
+                      {[40, 65, 55, 80, 70, 85, 95].map((height, index) => (                        <div 
                           key={index} 
-                          className={`flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-sm`}
-                          style={{ height: `${height}%` }}
+                          className={`flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-sm chart-bar-${Math.ceil(height/20)}`}
                         ></div>
                       ))}
                     </div>
@@ -197,21 +192,7 @@ export default function Home() {
                 ดูตัวอย่างรายงาน
               </button>
             </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-          <p className="mb-8 max-w-lg mx-auto">
-            เริ่มใช้งานระบบ POS Dashboard ได้ทันที เพิ่มประสิทธิภาพการขายและบริหารร้านของคุณ
-          </p>
-          <Link href="/pos">
-            <Button variant="secondary" className="w-full sm:w-auto px-8">
-              เริ่มใช้งานเดี๋ยวนี้
-            </Button>
-          </Link>
-        </div>
+          </div>        </div>
       </div>
     </div>
   );

@@ -46,8 +46,7 @@ export default function ProductTable({ products, onEdit, onDelete, onUpdateStock
       </div>
     );
   }
-  
-  // Handle stock update
+    // Handle stock update
   const handleStockUpdate = (productId: string) => {
     if (onUpdateStock && typeof stockUpdates[productId] === 'number') {
       onUpdateStock(productId, stockUpdates[productId]);
@@ -58,7 +57,8 @@ export default function ProductTable({ products, onEdit, onDelete, onUpdateStock
       });
     }
   };
-    return (
+
+  return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full">
@@ -173,9 +173,9 @@ export default function ProductTable({ products, onEdit, onDelete, onUpdateStock
                 </div>
               </td>
             </tr>
-          ))}
-        </tbody>
+          ))}        </tbody>
       </table>
+    </div>
     </div>
   );
 }

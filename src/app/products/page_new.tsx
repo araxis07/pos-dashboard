@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductTable from "@/components/products/ProductTable";
 import ProductForm from "@/components/products/ProductForm";
 import { Card } from "@/components/common/Card";
@@ -22,17 +22,6 @@ interface Product {
   updatedAt?: Date;
 }
 
-interface ProductFormData {
-  id?: string;
-  name: string;
-  price: number | string;
-  stock: number | string;
-  category?: string;
-  barcode?: string;
-  costPrice?: number | string;
-  supplier?: string;
-}
-
 export default function ProductsPage() {
   // Initialize product state from local storage
   const [products, setProducts] = useLocalStorage<Product[]>("pos-products", [
@@ -53,45 +42,32 @@ export default function ProductsPage() {
   
   // Get categories from products
   const categories = Array.from(new Set(products.map(p => p.category || "uncategorized")));
+
   // Handle adding a new product
-  const handleAdd = (productData: ProductFormData) => {
-    const newProduct: Product = {
-      ...productData,
+  const handleAdd = (product: Product) => {
+    const newProduct = {
+      ...product,
       id: Date.now().toString(),
-      price: typeof productData.price === 'string' ? parseFloat(productData.price) : productData.price,
-      stock: typeof productData.stock === 'string' ? parseInt(productData.stock) : productData.stock,
-      costPrice: productData.costPrice ? (typeof productData.costPrice === 'string' ? parseFloat(productData.costPrice) : productData.costPrice) : undefined,
       createdAt: new Date(),
       updatedAt: new Date()
     };
     
     setProducts(prev => [...prev, newProduct]);
     setShowForm(false);
-    toast.success(`เพิ่มสินค้า ${newProduct.name} สำเร็จแล้ว`);
+    toast.success(`เพิ่มสินค้า ${product.name} สำเร็จแล้ว`);
   };
 
   // Handle updating a product
-  const handleUpdate = (productData: ProductFormData) => {
-    if (!productData.id) return;
-    
-    const updatedProduct: Product = {
-      ...productData,
-      id: productData.id,
-      price: typeof productData.price === 'string' ? parseFloat(productData.price) : productData.price,
-      stock: typeof productData.stock === 'string' ? parseInt(productData.stock) : productData.stock,
-      costPrice: productData.costPrice ? (typeof productData.costPrice === 'string' ? parseFloat(productData.costPrice) : productData.costPrice) : undefined,
-      updatedAt: new Date()
-    };
-    
+  const handleUpdate = (product: Product) => {
     setProducts(prev => 
       prev.map(p => 
-        p.id === updatedProduct.id 
-          ? updatedProduct 
+        p.id === product.id 
+          ? { ...product, updatedAt: new Date() } 
           : p
       )
     );
     setEditProduct(null);
-    toast.success(`อัพเดตสินค้า ${updatedProduct.name} สำเร็จแล้ว`);
+    toast.success(`อัพเดตสินค้า ${product.name} สำเร็จแล้ว`);
   };
 
   // Handle deleting a product
@@ -118,8 +94,9 @@ export default function ProductsPage() {
 
   // Filter products based on search term, category, and stock level
   const filteredProducts = products.filter(product => {
-    const matchesSearch = searchTerm === "" || 
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch = 
+      searchTerm === "" || 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.barcode?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
@@ -131,6 +108,7 @@ export default function ProductsPage() {
     
     return matchesSearch && matchesCategory && matchesStockFilter;
   });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <div className="space-y-8 p-6">
@@ -203,11 +181,11 @@ export default function ProductsPage() {
             </div>
             
             {/* Category Filter */}
-            <div className="w-full lg:w-64">              <label htmlFor="category-filter" className="block text-sm font-semibold text-gray-700 mb-2">
+            <div className="w-full lg:w-64">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 📂 หมวดหมู่
               </label>
               <select
-                id="category-filter"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/90 backdrop-blur-sm"
@@ -224,18 +202,19 @@ export default function ProductsPage() {
             </div>
             
             {/* Stock Filter */}
-            <div className="w-full lg:w-64">              <label htmlFor="stock-filter" className="block text-sm font-semibold text-gray-700 mb-2">
+            <div className="w-full lg:w-64">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 📊 สถานะสต็อก
               </label>
               <select
-                id="stock-filter"
                 value={stockFilter}
                 onChange={(e) => setStockFilter(e.target.value as "all" | "low" | "out")}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/90 backdrop-blur-sm"
               >
                 <option value="all">ทุกสถานะ</option>
                 <option value="low">🔶 สินค้าใกล้หมด (≤10)</option>
-                <option value="out">🔴 สินค้าหมด</option>              </select>
+                <option value="out">🔴 สินค้าหมด</option>
+              </select>
             </div>
           </div>
         </Card>
@@ -249,43 +228,43 @@ export default function ProductsPage() {
             onUpdateStock={handleStockUpdate}
           />
         </Card>
-      </div>
-      
-      {/* Add/Edit product modal */}
-      <Modal
-        open={showForm || editProduct !== null}
-        onClose={() => {
-          setShowForm(false);
-          setEditProduct(null);
-        }}
-        title={editProduct ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}
-      >
-        <ProductForm 
-          onAdd={handleAdd} 
-          onUpdate={handleUpdate}
-          editProduct={editProduct}
-          categories={categories}
-        />
-      </Modal>
-      
-      {/* Delete confirmation modal */}
-      <Modal
-        open={deleteConfirmId !== null}
-        onClose={() => setDeleteConfirmId(null)}
-        title="ยืนยันการลบสินค้า"
-        size="sm"
-      >
-        <div className="text-center py-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-          <p className="text-gray-700 mb-6">คุณต้องการลบสินค้านี้ใช่หรือไม่? การกระทำนี้ไม่สามารถเรียกคืนได้</p>
-          <div className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>ยกเลิก</Button>
-            <Button variant="danger" onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}>ลบสินค้า</Button>
+        
+        {/* Add/Edit product modal */}
+        <Modal
+          open={showForm || editProduct !== null}
+          onClose={() => {
+            setShowForm(false);
+            setEditProduct(null);
+          }}
+          title={editProduct ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}
+        >
+          <ProductForm 
+            onAdd={handleAdd} 
+            onUpdate={handleUpdate}
+            editProduct={editProduct}
+            categories={categories}
+          />
+        </Modal>
+        
+        {/* Delete confirmation modal */}
+        <Modal
+          open={deleteConfirmId !== null}
+          onClose={() => setDeleteConfirmId(null)}
+          title="ยืนยันการลบสินค้า"
+          size="sm"
+        >
+          <div className="text-center py-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <p className="text-gray-700 mb-6">คุณต้องการลบสินค้านี้ใช่หรือไม่? การกระทำนี้ไม่สามารถเรียกคืนได้</p>
+            <div className="flex gap-3 justify-center">
+              <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>ยกเลิก</Button>
+              <Button variant="danger" onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}>ลบสินค้า</Button>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      </div>
     </div>
   );
 }

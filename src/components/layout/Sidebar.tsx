@@ -92,7 +92,7 @@ export default function Sidebar() {
       
       {/* Navigation */}
       <div className="p-4 space-y-2">
-        {navItems.map((item, index) => {
+        {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link 
@@ -173,15 +173,6 @@ export default function Sidebar() {
             </button>
           </div>
         </div>
-      )}
-    </aside>
-  );
-}
-          <button className="mt-2 w-full bg-white text-blue-700 border border-blue-300 text-xs py-1.5 rounded-lg hover:bg-blue-700 hover:text-white transition-colors">
-            แจ้งปัญหา
-          </button>
-        </div>
-      </div>
-    </aside>
+      )}    </aside>
   );
 }
