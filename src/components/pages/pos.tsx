@@ -2,6 +2,7 @@ import { useState } from "react";
 import ProductList from "@/components/pos/ProductList";
 import Cart from "@/components/pos/Cart";
 import CheckoutModal from "@/components/pos/CheckoutModal";
+import type { CartItem } from "@/types/pos";
 
 interface CartItem {
   id: string;

@@ -1,18 +1,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import ProductPlaceholder from "@/components/common/ProductPlaceholder";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  category?: string;
-  image?: string;
-  barcode?: string;
-  description?: string;
-  discount?: number;
-}
+import type { Product } from "@/types/pos";
 
 interface ProductListProps {
   onAddToCart: (product: Product) => void;
