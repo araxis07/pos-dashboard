@@ -5,21 +5,7 @@ import Cart from "@/components/pos/Cart";
 import CheckoutModal from "@/components/pos/CheckoutModal";
 import Link from "next/link";
 import toast from "react-hot-toast";
-
-// Define types
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  category?: string;
-  image?: string;
-  barcode?: string;
-}
-
-interface CartItem extends Product {
-  qty: number;
-}
+import type { Product, CartItem } from "@/types/pos";
 
 export default function POSPage() {
   // State for managing cart and UI

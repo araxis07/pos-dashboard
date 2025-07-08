@@ -3,19 +3,13 @@ import { useState } from 'react';
 import { Button } from "@/components/common/Button";
 import { formatCurrency, formatDateTime, convertToThaiText } from "@/components/utils/formatter";
 import { printContent, generateReceiptNumber, getCurrentDateTime } from "@/components/utils/printing";
+import type { CartItem } from "@/types/pos";
 
 interface ReceiptProps {
   cart: CartItem[];
   paymentMethod: 'cash' | 'card' | 'promptpay';
   receivedAmount?: number;
   change?: number;
-}
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  qty: number;
 }
 
 export default function Receipt({ cart, paymentMethod, receivedAmount, change }: ReceiptProps) {
