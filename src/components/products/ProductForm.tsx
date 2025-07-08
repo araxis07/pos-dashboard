@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/common/Button";
+import type { Product } from "@/types/pos";
 
 interface ProductFormData {
   id?: string;
@@ -12,18 +13,6 @@ interface ProductFormData {
   supplier?: string;
 }
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  category?: string;
-  barcode?: string;
-  costPrice?: number;
-  supplier?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 interface ProductFormProps {
   onAdd?: (product: ProductFormData) => void;

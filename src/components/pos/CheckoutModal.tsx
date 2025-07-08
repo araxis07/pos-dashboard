@@ -4,13 +4,7 @@ import Modal from "@/components/common/Modal";
 import { Button } from "@/components/common/Button";
 import { formatCurrency } from "@/components/utils/formatter";
 import Receipt from "@/components/pos/Receipt";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  qty: number;
-}
+import type { CartItem } from "@/types/pos";
 
 interface CheckoutModalProps {
   open: boolean;

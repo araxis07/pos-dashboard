@@ -1,13 +1,5 @@
 import { formatCurrency } from "@/components/utils/formatter";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  qty: number;
-  category?: string;
-  image?: string;
-}
+import type { CartItem } from "@/types/pos";
 
 interface CartProps {
   cart: CartItem[];
