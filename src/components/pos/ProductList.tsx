@@ -1,18 +1,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import ProductPlaceholder from "@/components/common/ProductPlaceholder";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  category?: string;
-  image?: string;
-  barcode?: string;
-  description?: string;
-  discount?: number;
-}
+import type { Product } from "@/types/pos";
 
 interface ProductListProps {
   onAddToCart: (product: Product) => void;
@@ -160,18 +149,16 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
 
   // Filter products based on search term and category
   const filteredProducts = products.filter(prod => {
-    const matchesSearch = searchTerm === "" || 
-                         prod.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         prod.barcode?.includes(searchTerm) ||
-                         prod.description?.toLowerCase().includes(searchTerm.toLowerCase());
-                         
+    const matchesSearch =
+      searchTerm === "" ||
+      prod.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      prod.barcode?.includes(searchTerm) ||
+      prod.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesCategory = category === "all" || prod.category === category;
-    
+
     return matchesSearch && matchesCategory;
-  });  // Check if a product has a valid image
-  const hasValidImage = (product: Product): boolean => {
-    return !!product.image && product.image.startsWith('/');
-  };
+  });
   
   // Function to determine stock status
   const getStockStatus = (stock: number) => {
@@ -331,7 +318,8 @@ export default function ProductList({ onAddToCart, searchTerm = "", category = "
                 </svg>
                 {product.stock <= 0 ? 'สินค้าหมด' : 'เพิ่มลงตะกร้า'}
               </button>
-            </div>          </div>
+            </div>
+          </div>
         );
       })}
     </div>
