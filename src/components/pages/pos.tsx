@@ -2,13 +2,13 @@ import { useState } from "react";
 import ProductList from "@/components/pos/ProductList";
 import Cart from "@/components/pos/Cart";
 import CheckoutModal from "@/components/pos/CheckoutModal";
-import type { CartItem } from "@/types/pos";
+import type { Product, CartItem } from "@/types/pos";
 
 export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const addToCart = (product: CartItem) => {
+  const addToCart = (product: Product) => {
     setCart(prev => {
       const idx = prev.findIndex(item => item.id === product.id);
       if (idx !== -1) {
