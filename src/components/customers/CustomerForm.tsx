@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/common/Button";
 import { formatPhoneNumber } from "@/components/utils/formatter";
 
-interface CustomerFormData {
+export interface CustomerFormData {
   id?: string;
   name: string;
   email?: string;
@@ -14,7 +14,7 @@ interface CustomerFormData {
   notes?: string;
 }
 
-interface Customer {
+export interface Customer {
   id: string;
   name: string;
   email?: string;

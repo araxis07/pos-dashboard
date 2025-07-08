@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/common/Button";
 import type { Product } from "@/types/pos";
 
-interface ProductFormData {
+export interface ProductFormData {
   id?: string;
   name: string;
   price: number | string;

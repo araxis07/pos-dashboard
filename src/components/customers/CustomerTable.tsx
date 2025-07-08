@@ -1,16 +1,5 @@
 import { formatPhone, formatDateTime } from "@/components/utils/formatter";
-
-interface Customer {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  memberType?: string;
-  totalPurchase?: number;
-  lastVisit?: Date;
-  notes?: string;
-}
+import type { Customer } from "@/components/customers/CustomerForm";
 
 interface CustomerTableProps {
   customers: Customer[];
