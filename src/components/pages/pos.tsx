@@ -2,15 +2,7 @@ import { useState } from "react";
 import ProductList from "@/components/pos/ProductList";
 import Cart from "@/components/pos/Cart";
 import CheckoutModal from "@/components/pos/CheckoutModal";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  qty: number;
-  category?: string;
-  image?: string;
-}
+import type { CartItem } from "@/types/pos";
 
 export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);

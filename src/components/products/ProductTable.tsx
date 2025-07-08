@@ -1,19 +1,7 @@
 import { formatCurrency } from "@/components/utils/formatter";
 import { useState } from "react";
 import { Button } from "@/components/common/Button";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  category?: string;
-  barcode?: string;
-  costPrice?: number;
-  supplier?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import type { Product } from "@/types/pos";
 
 interface ProductTableProps {
   products: Product[];
